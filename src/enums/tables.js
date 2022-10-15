@@ -10,30 +10,35 @@ const USERS = Object.freeze({
     ID: "id",
     NAME: "name",
     EMAIL: "email",
-    PASSWORD: "password"
+    PASSWORD: "password",
+    CREATED_AT: "createdAt"
 });
 
 const URLS = Object.freeze({
     ID: "id",
-    URL: "url"
+    URL: "url",
+    CREATED_AT: "createdAt"
 });
 
 const SESSIONS = Object.freeze({
     ID: "id",
     USER_ID: "userId",
-    TOKEN: "token"
+    TOKEN: "token",
+    CREATED_AT: "createdAt"
 });
 
 const SHORT_URLS = Object.freeze({
     ID: "id",
     SHORT_URL: "shotUrl",
     USER_ID: "userId",
-    URL_ID: "urlId"
+    URL_ID: "urlId",
+    CREATED_AT: "createdAt"
 });
 
 const VISITS = Object.freeze({
     ID: "id",
-    SHORT_URL_ID: "shortUrlId"
+    SHORT_URL_ID: "shortUrlId",
+    CREATED_AT: "createdAt"
 });
 
 export {
