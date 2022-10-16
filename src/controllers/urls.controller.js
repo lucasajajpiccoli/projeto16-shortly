@@ -3,7 +3,8 @@ import { customAlphabet } from 'nanoid';
 import {
     TABLES,
     URLS,
-    SHORT_URLS
+    SHORT_URLS,
+    VISITS
 } from '../enums/tables.js';
 import { STATUS_CODE } from '../enums/statusCode.js';
 import { NANOID } from '../enums/nanoid.js';
@@ -22,7 +23,8 @@ async function insert(req, res) {
         const shortUrlInsertion = (await connection.query(
             `INSERT INTO "${TABLES.SHORT_URLS}" ("${SHORT_URLS.SHORT_URL}", "${SHORT_URLS.USER_ID}", "${SHORT_URLS.URL_ID}")
             VALUES ('${shortUrl}', ${userId},
-            (SELECT ${URLS.ID} FROM ${TABLES.URLS} WHERE ${URLS.URL} = $1));`,
+                (SELECT ${URLS.ID} FROM ${TABLES.URLS} WHERE ${URLS.URL} = $1)
+            );`,
         [url])).rowCount;
         
         if(shortUrlInsertion === 0){
@@ -63,7 +65,40 @@ async function list(req, res) {
     }
 }
 
+async function open(req, res) {
+    const { shortUrl } = req.params;
+    try {
+        const selection = (await connection.query(
+            `SELECT
+                "${TABLES.SHORT_URLS}".${SHORT_URLS.ID} AS "${VISITS.SHORT_URL_ID}",
+                ${TABLES.URLS}.${URLS.URL}
+            FROM "${TABLES.SHORT_URLS}"
+                JOIN ${TABLES.URLS}
+                ON "${TABLES.SHORT_URLS}"."${SHORT_URLS.URL_ID}" = ${TABLES.URLS}.${URLS.ID} 
+            WHERE "${TABLES.SHORT_URLS}"."${SHORT_URLS.SHORT_URL}" = $1;`,
+        [shortUrl])).rows[0];
+        
+        if(!selection) {
+            return res.sendStatus(STATUS_CODE.NOT_FOUND);
+        }
+
+        const insertion = (await connection.query(
+            `INSERT INTO ${TABLES.VISITS} ("${VISITS.SHORT_URL_ID}")
+            VALUES (${selection.shortUrlId});`
+        )).rowCount;
+
+        if(insertion === 0) {
+            return res.sendStatus(STATUS_CODE.SERVER_ERROR);
+        }
+
+        res.redirect(selection.url);
+    } catch (error) {
+        serverError(res, error);
+    }
+}
+
 export {
     insert,
-    list
+    list,
+    open
 };
