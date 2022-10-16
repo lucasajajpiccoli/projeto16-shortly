@@ -15,7 +15,6 @@ const nanoid = customAlphabet(NANOID.CUSTOM_ALPHABET, NANOID.LENGTH);
 async function insert(req, res) {
     const { userId, url } = res.locals;
     const shortUrl = nanoid();
-    console.log(userId);
     try {
         const urlInsertion = await connection.query(
             `INSERT INTO ${TABLES.URLS} (${URLS.URL}) VALUES ($1) ON CONFLICT DO NOTHING;`,
@@ -36,6 +35,35 @@ async function insert(req, res) {
     }
 }
 
+async function list(req, res) {
+    const id = Number(req.params.id);
+    if(!Number.isInteger(id)) {
+        return res.sendStatus(STATUS_CODE.NOT_FOUND);
+    }
+
+    try {
+        const selection = (await connection.query(
+            `SELECT
+                "${TABLES.SHORT_URLS}".${SHORT_URLS.ID},
+                "${TABLES.SHORT_URLS}"."${SHORT_URLS.SHORT_URL}",
+                ${TABLES.URLS}.${URLS.URL}
+            FROM "${TABLES.SHORT_URLS}"
+                JOIN ${TABLES.URLS}
+                ON "${TABLES.SHORT_URLS}"."${SHORT_URLS.URL_ID}" = ${TABLES.URLS}.${URLS.ID}
+            WHERE "${TABLES.SHORT_URLS}".${SHORT_URLS.ID} = $1;`,
+        [id])).rows[0];
+        
+        if(!selection) {
+            return res.sendStatus(STATUS_CODE.NOT_FOUND);
+        }
+
+        res.status(STATUS_CODE.OK).send(selection);
+    } catch (error) {
+        serverError(res, error);
+    }
+}
+
 export {
-    insert
+    insert,
+    list
 };
