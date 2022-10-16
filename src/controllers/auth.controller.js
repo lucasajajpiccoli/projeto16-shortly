@@ -7,12 +7,13 @@ import {
     SESSIONS
 } from '../enums/tables.js';
 import { STATUS_CODE } from '../enums/statusCode.js';
+import { BCRYPT } from '../enums/bcrypt.js';
 import { connection } from '../database.js';
 import { serverError } from './controllersHelper.js';
 
 async function signUp(req, res) {
     const { name, email, password } = res.locals;
-    const hashedPassword = bcrypt.hashSync(password, 10);
+    const hashedPassword = bcrypt.hashSync(password, BCRYPT.SALT_OR_ROUND);
     try {
         const insertion = (await connection.query(
             `INSERT INTO ${TABLES.USERS} (${USERS.NAME}, ${USERS.EMAIL}, ${USERS.PASSWORD})

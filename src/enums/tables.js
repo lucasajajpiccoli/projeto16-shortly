@@ -29,7 +29,7 @@ const SESSIONS = Object.freeze({
 
 const SHORT_URLS = Object.freeze({
     ID: "id",
-    SHORT_URL: "shotUrl",
+    SHORT_URL: "shortUrl",
     USER_ID: "userId",
     URL_ID: "urlId",
     CREATED_AT: "createdAt"

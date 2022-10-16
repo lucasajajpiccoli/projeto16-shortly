@@ -35,14 +35,14 @@ async function signInMiddleware(req, res, next) {
         const user = (await connection.query(
             `SELECT ${USERS.ID}, ${USERS.PASSWORD}
             FROM ${TABLES.USERS} WHERE ${USERS.EMAIL} = $1;`,
-        [body.email])).rows;
-        if(!user[0]) {
+        [body.email])).rows[0];
+        if(!user) {
             return res.sendStatus(STATUS_CODE.UNAUTHORIZED);
         }
 
         res.locals = {
-            id: user[0].id,
-            hashedPassword: user[0].password,
+            id: user.id,
+            hashedPassword: user.password,
             password: body.password
         };
         next();
@@ -51,7 +51,29 @@ async function signInMiddleware(req, res, next) {
     }
 }
 
+async function authenticationMiddleware(req, res, next) {
+    const token = req.headers.authorization?.replace("Bearer ", "");
+    if(!token) {
+        return res.sendStatus(STATUS_CODE.UNAUTHORIZED);
+    }
+    try {
+        const session = (await connection.query(
+            `SELECT "${SESSIONS.USER_ID}"
+            FROM ${TABLES.SESSIONS} WHERE ${SESSIONS.TOKEN} = $1;`,
+        [token])).rows[0];
+        if(!session) {
+            return res.sendStatus(STATUS_CODE.UNAUTHORIZED);
+        }
+
+        res.locals = session;
+        next();
+    } catch (error) {
+        serverError(res, error);
+    }
+}
+
 export {
     signUpMiddleware,
-    signInMiddleware
+    signInMiddleware,
+    authenticationMiddleware
 };
