@@ -15,10 +15,12 @@ import {
 
 const urlsRoute = Router();
 
-urlsRoute.post('/urls/shorten', authenticationMiddleware, insertUrlMiddleware, insert);
 urlsRoute.get('/urls/:id', list);
 urlsRoute.get('/urls/open/:shortUrl', open);
-urlsRoute.delete('/urls/:id', authenticationMiddleware, removeUrlMiddleware, remove);
+
+urlsRoute.use(authenticationMiddleware);
+urlsRoute.post('/urls/shorten', insertUrlMiddleware, insert);
+urlsRoute.delete('/urls/:id', removeUrlMiddleware, remove);
 
 export {
     urlsRoute
