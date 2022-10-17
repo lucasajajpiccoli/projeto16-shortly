@@ -101,7 +101,7 @@ async function remove(req, res) {
     const { shortUrlId } = res.locals;
     try {
         const visitsRemoval = await connection.query(
-            `DELETE FROM ${TABLES.VISITS} WHERE ${VISITS.SHORT_URL_ID} = $1;`,
+            `DELETE FROM ${TABLES.VISITS} WHERE "${VISITS.SHORT_URL_ID}" = $1;`,
         [shortUrlId]);
 
         const shortUrlRemoval = (await connection.query(
