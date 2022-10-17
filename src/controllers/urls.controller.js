@@ -97,8 +97,29 @@ async function open(req, res) {
     }
 }
 
+async function remove(req, res) {
+    const {
+        userId,
+        shortUrlId
+    } = res.locals;
+    try {
+        const shortUrlRemoval = (await connection.query(
+            `DELETE FROM "${TABLES.SHORT_URLS}" WHERE ${SHORT_URLS.ID} = $1;`,
+        [shortUrlId])).rowCount;
+
+        if(shortUrlRemoval !== 1) {
+            return res.sendStatus(STATUS_CODE.SERVER_ERROR);
+        }
+
+        res.sendStatus(STATUS_CODE.NO_CONTENT);
+    } catch (error) {
+        serverError(res, error);
+    }
+}
+
 export {
     insert,
     list,
-    open
+    open,
+    remove
 };
