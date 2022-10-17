@@ -46,10 +46,7 @@ async function removeUrlMiddleware(req, res, next) {
             return res.sendStatus(STATUS_CODE.UNAUTHORIZED);
         }
 
-        res.locals = {
-            userId,
-            shortUrlId: id
-        };
+        res.locals = { shortUrlId: id };
         next();
     } catch (error) {
      serverError(res, error);   

@@ -18,9 +18,8 @@ const urlsRoute = Router();
 urlsRoute.get('/urls/:id', list);
 urlsRoute.get('/urls/open/:shortUrl', open);
 
-urlsRoute.use(authenticationMiddleware);
-urlsRoute.post('/urls/shorten', insertUrlMiddleware, insert);
-urlsRoute.delete('/urls/:id', removeUrlMiddleware, remove);
+urlsRoute.post('/urls/shorten', authenticationMiddleware, insertUrlMiddleware, insert);
+urlsRoute.delete('/urls/:id', authenticationMiddleware, removeUrlMiddleware, remove);
 
 export {
     urlsRoute

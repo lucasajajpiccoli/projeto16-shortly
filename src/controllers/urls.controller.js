@@ -98,11 +98,12 @@ async function open(req, res) {
 }
 
 async function remove(req, res) {
-    const {
-        userId,
-        shortUrlId
-    } = res.locals;
+    const { shortUrlId } = res.locals;
     try {
+        const visitsRemoval = await connection.query(
+            `DELETE FROM ${TABLES.VISITS} WHERE ${VISITS.SHORT_URL_ID} = $1;`,
+        [shortUrlId]);
+
         const shortUrlRemoval = (await connection.query(
             `DELETE FROM "${TABLES.SHORT_URLS}" WHERE ${SHORT_URLS.ID} = $1;`,
         [shortUrlId])).rowCount;
