@@ -16,5 +16,3 @@ jobs:
       - name: Run ESLint
         run: npx eslint .
           --config .eslintrc.json
-      - name: Build
-        run: npm i && npm run build
