@@ -1,0 +1,20 @@
+name: Push
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  Push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - name: Install ESLint
+        run: npm install eslint@8.10.0
+      - name: Run ESLint
+        run: npx eslint .
+          --config .eslintrc.json
+      - name: Build
+        run: npm i && npm run build
