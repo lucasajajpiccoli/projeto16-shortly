@@ -17,7 +17,7 @@ async function insert(req, res) {
     const { userId, url } = res.locals;
     const shortUrl = nanoid();
     try {
-        const urlInsertion = await connection.query(
+        await connection.query(
             `INSERT INTO ${TABLES.URLS} (${URLS.URL}) VALUES ($1) ON CONFLICT DO NOTHING;`,
         [url]);
         const shortUrlInsertion = (await connection.query(
@@ -100,7 +100,7 @@ async function open(req, res) {
 async function remove(req, res) {
     const { shortUrlId } = res.locals;
     try {
-        const visitsRemoval = await connection.query(
+        await connection.query(
             `DELETE FROM ${TABLES.VISITS} WHERE "${VISITS.SHORT_URL_ID}" = $1;`,
         [shortUrlId]);
 
